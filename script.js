@@ -4,14 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const cityInput = document.getElementById('city');
     const searchButton = document.getElementById('search');
-    const lastSearchCityElement = document.getElementById('last-search-city');
-    const searchHistory = []; // Array to store the search history
+    const lastSearchElement = document.getElementById('last-search');
+    let searchHistory = getSearchHistory(); // Retrieve search history from Local Storage
 
     searchButton.addEventListener('click', () => {
         const cityName = cityInput.value;
         if (cityName) {
             fetchWeatherData(cityName);
-            updateSearchHistory(cityName);
         }
     });
 
@@ -22,7 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(weatherUrl);
             if (response.status === 200) {
                 const data = await response.json();
-                displayWeatherData(data);
+                searchHistory = updateSearchHistory(cityName, data);
+                displaySearchHistory(searchHistory);
             } else {
                 alert('Location not found. Please try again.');
             }
@@ -31,34 +31,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function displayWeatherData(data) {
-        const currentWeatherElement = document.getElementById('current-weather');
-        if (data && data.weather && data.weather[0] && data.main) {
-            currentWeatherElement.innerHTML = `
-                <h2>Current Weather</h2>
-                <p>Temperature: ${data.main.temp}°C</p>
-                <p>Weather: ${data.weather[0].description}</p>
-                <p>Humidity: ${data.main.humidity}%</p>
-            `;
-        } else {
-            currentWeatherElement.innerHTML = 'Weather information not available.';
-        }
-    }
+   
+    function updateSearchHistory(cityName, weatherData) {
+        searchHistory.unshift({ city: cityName, weatherData: weatherData });
 
-    function updateSearchHistory(cityName) {
-        // Add the cityName to the beginning of the search history array
-        searchHistory.unshift(cityName);
-
-        // Trim the search history array to the maximum number of cities
         if (searchHistory.length > maxSearchHistory) {
             searchHistory.pop();
         }
 
-        // Update the "Last Searched" section with the last three search history entries
-        lastSearchCityElement.innerHTML = `
+        // Save the updated search history to Local Storage
+        localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+
+        return searchHistory;
+    }
+
+    function getSearchHistory() {
+        const storedHistory = localStorage.getItem('searchHistory');
+        return storedHistory ? JSON.parse(storedHistory) : [];
+    }
+
+    function displaySearchHistory(searchHistory) {
+        lastSearchElement.innerHTML = `
             <h2>Last Searched:</h2>
             <ul>
-                ${searchHistory.slice(0, maxSearchHistory).map(city => `<li>${city}</li>`).join('')}
+                ${searchHistory.map(entry => `
+                    <li>
+                        <h3>${entry.city}</h3>
+                        ${entry.weatherData.main ? `
+                            <p>Temperature: ${entry.weatherData.main.temp}°C</p>
+                            <p>Weather: ${entry.weatherData.weather[0].description}</p>
+                            <p>Humidity: ${entry.weatherData.main.humidity}%</p>
+                        ` : '<p>Weather information not available.</p>'}
+                    </li>
+                `).join('')}
             </ul>
         `;
     }
