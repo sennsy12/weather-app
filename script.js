@@ -52,19 +52,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displaySearchHistory(searchHistory) {
         lastSearchElement.innerHTML = `
-            <h2>Last Searched:</h2>
+        <h2><i class="fas fa-history"></i> </h2>
             <ul>
                 ${searchHistory.map(entry => `
                     <li>
                         <h3>${entry.city}</h3>
-                        ${entry.weatherData.main ? `
-                            <p>Temperature: ${entry.weatherData.main.temp}°C</p>
-                            <p>Weather: ${entry.weatherData.weather[0].description}</p>
-                            <p>Humidity: ${entry.weatherData.main.humidity}%</p>
+                        ${entry.weatherData.weather ? `
+                            <div class="weather-data">
+                                <div class="data-icon"><i class="fas fa-thermometer-three-quarters"></i></div>
+                                <p> ${entry.weatherData.main.feels_like}°C</p>
+                            </div>
+                            <div class="weather-data">
+                                <div class="data-icon"><i class="fas fa-sun"></i></div>
+                                <p> ${entry.weatherData.weather[0].description}</p>
+                            </div>
+                            <div class="weather-data">
+                                <div class="data-icon"><i class="fas fa-tint"></i></div>
+                                <p> ${entry.weatherData.main.humidity}%</p>
+                            </div>
+                            <div class="weather-data">
+                                <div class="data-icon"><i class="fas fa-cloud"></i></div>
+                                <p> ${entry.weatherData.clouds.all}%</p>
+                            </div>
                         ` : '<p>Weather information not available.</p>'}
                     </li>
                 `).join('')}
             </ul>
         `;
     }
+    
 });
