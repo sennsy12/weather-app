@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${entry.weatherData.main ? `
                             <div class="weather-data">
                                 <div class="data-icon"><i class="fas fa-thermometer-half"></i></div>
-                                <p>Temperature: ${entry.weatherData.main.temp}°C</p>
+                                <p>${entry.weatherData.main.temp}°C</p>
                             </div>
                             <div class="weather-data">
                                 <div class="data-icon"><i class="fas fa-sun"></i></div>
