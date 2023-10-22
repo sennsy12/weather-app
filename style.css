@@ -1,18 +1,26 @@
-/* Add the following styles for the forecast and container classes */
+/* Header Styles */
 header {
-    background-color: #3e5258; /* Change the background color to your desired color */
-    color: white; /* Header text color */
+    background-color: #3e5258;
+    color: white;
     text-align: center;
     padding: 20px 0;
-    width: 100%; /* Header spans the full width */
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+    width: 100%;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
+header h1 {
+    font-size: 28px;
+    margin: 0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* Body Styles */
 body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background-color: #717a7e; /* Change the background color to your desired color */
+    background-color: #717a7e;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -20,47 +28,31 @@ body {
     height: 100vh;
 }
 
-
-header h1 {
-    font-size: 28px; /* Increase the font size */
-    margin: 0;
-    letter-spacing: 2px; /* Add letter spacing for a modern touch */
-    text-transform: uppercase; /* Uppercase text */
-}
-
-
+/* Search Styles */
 .container {
     background: linear-gradient(to bottom, #7297a0, #f5f5f5);
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    width: 1150px;
     text-align: center;
     padding: 20px;
     margin: 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: transform 0.3s ease; /* Add a smooth transition on hover */
 }
 
-.container:hover {
-    transform: scale(1.02); /* Enlarge on hover for a modern effect */
-}
+
 
 .search {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
     border-radius: 10px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-bottom: 15px;
-    transition: transform 0.3s ease; /* Add a modern hover effect */
 }
 
-/* Style the input field */
 input[type="text"] {
     width: 100%;
     padding: 10px;
@@ -71,7 +63,6 @@ input[type="text"] {
     background: #fff;
 }
 
-/* Style the "Get Weather" button */
 button {
     background-color: #a6cdda;
     color: white;
@@ -80,19 +71,15 @@ button {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    margin-top: 10px; /* Add top margin to separate the button from the input field */
+    margin-top: 10px;
 }
 
-.search:hover {
-    transform: scale(1.02); /* Enlarge on hover for a modern effect */
-}
-
+/* Last Search Styles */
 .last-search {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh; /* This makes it fill the entire viewport height */
 }
 
 .last-search h2 {
@@ -100,12 +87,11 @@ button {
     margin-bottom: 10px;
 }
 
-
 .last-search ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    white-space: nowrap; /* Prevent wrapping to the next line */
+    white-space: nowrap;
 }
 
 .last-search li {
@@ -115,17 +101,43 @@ button {
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #fff;
-    display: inline-block; /* Display items inline */
-    margin-right: 10px; /* Add right margin for spacing between entries */
-}
-
-.last-search li:hover {
-    background-color: #f5f5f5;
+    display: inline-block;
+    margin-right: 10px;
 }
 
 
+/* Weather Data Styles */
+.weather-data {
+    display: flex;
+    align-items: center;
+}
 
-.forecast {
+.data-icon {
+    margin-right: 10px;
+}
+
+/* Main Card Styles */
+.main-card {
+    background: linear-gradient(to bottom, #7297a0, #f5f5f5);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+
+.main-card h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Forecast Card Styles */
+.forecast-card {
     background: linear-gradient(to bottom, #7297a0, #f5f5f5);
     border-radius: 10px;
     padding: 20px;
@@ -135,34 +147,25 @@ button {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    transition: transform 0.7s ease; /* Add a modern hover effect */
-
-
-}
-.forecast:hover{
-    transform: scale(1.02); /* Enlarge on hover for a modern effect */
-
 }
 
-/* Style the forecast's title */
-.forecast h2 {
+
+.forecast-card h2 {
     font-size: 20px;
     color: #333;
     margin-bottom: 10px;
 }
 
-/* Style forecast list items */
-.forecast ul {
+.forecast-card ul {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
-    flex-wrap: wrap; /* Allow forecast items to wrap to the next line if necessary */
-    justify-content: center; /* Center forecast items horizontally */
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-/* Style individual forecast items */
-.forecast li {
+.forecast-card li {
     font-size: 16px;
     margin: 5px;
     padding: 5px;
@@ -170,21 +173,7 @@ button {
     border-radius: 5px;
     background-color: #fff;
     text-align: center;
-    min-width: 150px; /* Adjust the minimum width as needed */
-    margin-right: 10px; /* Add right margin for spacing between forecast items */
+    min-width: 150px;
+    margin-right: 10px;
 }
 
-.forecast li:hover {
-    background-color: #f5f5f5;
-}
-
-
-
-.weather-data {
-    display: flex;
-    align-items: center;
-}
-
-.data-icon {
-    margin-right: 10px; /* Adjust the margin as needed for spacing */
-}

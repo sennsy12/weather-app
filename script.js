@@ -6,30 +6,51 @@ document.addEventListener('DOMContentLoaded', () => {
     const cityInput = document.getElementById('city');
     const searchButton = document.getElementById('search');
     const lastSearchElement = document.getElementById('last-search');
-    const forecastElement = document.getElementById('forecast');
-    let searchHistory = getSearchHistory(); // Retrieve search history from Local Storage
+    const mainCard = document.querySelector('.main-card'); // Target the main card container
+    const forecastCard = document.querySelector('.forecast-card'); // Target the forecast card container
+    
+    let searchHistory = getSearchHistory();
 
-    // Define the getSearchHistory function to retrieve search history from Local Storage
-    function getSearchHistory() {
-        const storedHistory = localStorage.getItem('searchHistory');
-        return storedHistory ? JSON.parse(storedHistory) : [];
+    searchButton.addEventListener('click', () => {
+        const cityName = cityInput.value;
+        if (cityName) {
+            fetchWeatherData(cityName);
+        }
+    });
+
+    async function fetchWeatherData(cityName) {
+        try {
+            const [weatherData, forecastData] = await Promise.all([
+                fetchWeather(cityName, 'weather'),
+                fetchWeather(cityName, 'forecast')
+            ]);
+
+            if (weatherData.cod === 200 && forecastData.cod === '200') {
+                updateSearchHistory(cityName, weatherData);
+                displaySearchHistory(searchHistory);
+                displayMainCard(weatherData);
+                displayForecastCard(forecastData);
+            } else {
+                alert('Location not found. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error fetching weather data:', error);
+        }
     }
 
-    // Define the updateSearchHistory function to update the search history
-    function updateSearchHistory(cityName, weatherData) {
-        searchHistory.unshift({ city: cityName, weatherData: weatherData });
+    async function fetchWeather(cityName, type) {
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/${type}?q=${cityName}&appid=${apiKey}&units=metric`);
+        return response.json();
+    }
 
+    function updateSearchHistory(cityName, weatherData) {
+        searchHistory.unshift({ city: cityName, weatherData });
         if (searchHistory.length > maxSearchHistory) {
             searchHistory.pop();
         }
-
-        // Save the updated search history to Local Storage
         localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
-
-        return searchHistory;
     }
 
-    // Define the displaySearchHistory function to display the search history
     function displaySearchHistory(searchHistory) {
         lastSearchElement.innerHTML = `
             <h2>Last Searched:</h2>
@@ -40,19 +61,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${entry.weatherData.main ? `
                             <div class="weather-data">
                                 <div class="data-icon"><i class="fas fa-thermometer-half"></i></div>
-                                <p>${entry.weatherData.main.temp}°C</p>
+                                <p>${entry.weatherData.main.temp.toFixed(2)}°C</p>
                             </div>
                             <div class="weather-data">
                                 <div class="data-icon"><i class="fas fa-sun"></i></div>
-                                <p> ${entry.weatherData.weather[0].description}</p>
+                                <p>${entry.weatherData.weather[0].description}</p>
                             </div>
                             <div class="weather-data">
                                 <div class="data-icon"><i class="fas fa-tint"></i></div>
-                                <p> ${entry.weatherData.main.humidity}%</p>
+                                <p>${entry.weatherData.main.humidity}%</p>
                             </div>
                             <div class="weather-data">
                                 <div class="data-icon"><i class="fas fa-cloud"></i></div>
-                                <p> ${entry.weatherData.clouds.all}%</p>
+                                <p>${entry.weatherData.clouds.all}%</p>
                             </div>
                         ` : '<p>Weather information not available.</p>'}
                     </li>
@@ -61,49 +82,40 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-    searchButton.addEventListener('click', () => {
-        const cityName = cityInput.value;
-        if (cityName) {
-            fetchWeatherData(cityName);
-        }
-    });
-
-    async function fetchWeatherData(cityName) {
-        const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`;
-        const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}&units=metric`;
-
-        try {
-            const [weatherResponse, forecastResponse] = await Promise.all([
-                fetch(weatherUrl),
-                fetch(forecastUrl)
-            ]);
-
-            if (weatherResponse.status === 200 && forecastResponse.status === 200) {
-                const weatherData = await weatherResponse.json();
-                const forecastData = await forecastResponse.json();
-                searchHistory = updateSearchHistory(cityName, weatherData);
-                displaySearchHistory(searchHistory);
-                displayForecast(forecastData);
-            } else {
-                alert('Location not found. Please try again.');
-            }
-        } catch (error) {
-            console.error('Error fetching weather data:', error);
-        }
+    function displayMainCard(weatherData) {
+        mainCard.innerHTML = `
+            <h2>Current Weather</h2>
+            ${weatherData.main ? `
+                <div class="weather-data">
+                    <div class="data-icon"><i class="fas fa-thermometer-half"></i></div>
+                    <p>Temperature: ${weatherData.main.temp.toFixed(2)}°C</p>
+                </div>
+                <div class="weather-data">
+                    <div class="data-icon"><i class="fas fa-sun"></i></div>
+                    <p>${weatherData.weather[0].description}</p>
+                </div>
+                <div class="weather-data">
+                    <div class="data-icon"><i class="fas fa-tint"></i></div>
+                    <p>Humidity: ${weatherData.main.humidity}%</p>
+                </div>
+                <div class="weather-data">
+                    <div class="data-icon"><i class="fas fa-cloud"></i></div>
+                    <p>Cloudiness: ${weatherData.clouds.all}%</p>
+                </div>
+            ` : '<p>Weather information not available.</p>'}
+        `;
     }
 
-    function displayForecast(forecastData) {
-        const forecastList = forecastData.list.slice(0, maxForecastDays);
-
-        forecastElement.innerHTML = `
-            <h2>6-Day Forecast:</h2>
+    function displayForecastCard(forecastData) {
+        forecastCard.innerHTML = `
+            <h2>Forecast Card (6-Day Forecast):</h2>
             <ul>
-                ${forecastList.map(item => `
+                ${forecastData.list.slice(0, maxForecastDays).map(item => `
                     <li>
                         <h3>${new Date(item.dt * 1000).toDateString()}</h3>
                         <div class="weather-data">
                             <div class="data-icon"><i class="fas fa-thermometer-half"></i></div>
-                            <p>${item.main.temp}°C</p>
+                            <p>Temperature: ${item.main.temp.toFixed(2)}°C</p>
                         </div>
                         <div class="weather-data">
                             <div class="data-icon"><i class="fas fa-sun"></i></div>
@@ -111,11 +123,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div class="weather-data">
                             <div class="data-icon"><i class="fas fa-tint"></i></div>
-                            <p> ${item.main.humidity}%</p>
+                            <p>Humidity: ${item.main.humidity}%</p>
                         </div>
                         <div class="weather-data">
                             <div class="data-icon"><i class="fas fa-cloud"></i></div>
-                            <p> ${item.clouds.all}%</p>
+                            <p>Cloudiness: ${item.clouds.all}%</p>
                         </div>
                     </li>
                 `).join('')}
@@ -123,5 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-    // Rest of your code remains the same.
+    function getSearchHistory() {
+        const storedHistory = localStorage.getItem('searchHistory');
+        return storedHistory ? JSON.parse(storedHistory) : [];
+    }
 });
