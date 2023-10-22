@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let searchHistory = getSearchHistory();
     // Initial API call and data population
-    fetchWeatherData('Oslo'); // You can replace 'New York' with the default city you want
+    fetchWeatherData('Oslo'); // default city 
 
     searchButton.addEventListener('click', () => {
         const cityName = cityInput.value;
@@ -98,23 +98,6 @@ function displaySearchHistory(searchHistory) {
     });
 }
 
-    function displayWeatherData(weatherData) {
-        return weatherData.main ? `
-            <div class="data-icon"><img src="https://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png" alt="weather-icon"></div>
-            <div class="weather-data">
-            <div class="data-icon"><i class="fas fa-thermometer-half"></i></div>
-                <p>Temperature: ${weatherData.main.temp.toFixed(2)}°C</p>
-            </div>
-            <div class="weather-data">
-                <div class="data-icon"><i class="fas fa-tint"></i></div>
-                <p>Humidity: ${weatherData.main.humidity}%</p>
-            </div>
-            <div class="weather-data">
-                <div class="data-icon"><i class="fas fa-cloud"></i></div>
-                <p>Cloudiness: ${weatherData.clouds.all}%</p>
-            </div>
-        ` : '<p>Weather information not available.</p>';
-    }
 
     function displayMainCard(weatherData) {
         mainCard.innerHTML = `
@@ -180,10 +163,6 @@ function displaySearchHistory(searchHistory) {
         `;
     }
     
-    function getCurrentDate() {
-    const currentDate = new Date();
-    return currentDate.toDateString();
-}
 
 function getCurrentDateTime() {
     const now = new Date();
