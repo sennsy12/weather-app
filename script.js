@@ -59,43 +59,41 @@ document.addEventListener('DOMContentLoaded', () => {
             <ul>
                 ${searchHistory.map(entry => `
                     <li>
-                        <h3>${entry.city}</h3>
-                        ${entry.weatherData.main ? `
-                            <div class="weather-data">
-                                <div class="data-icon"><i class="fas fa-thermometer-half"></i></div>
-                                <p>${entry.weatherData.main.temp.toFixed(2)}°C</p>
-                            </div>
-                            <div class="weather-data">
-                                <div class="data-icon"><i class="fas fa-sun"></i></div>
-                                <p>${entry.weatherData.weather[0].description}</p>
-                            </div>
-                            <div class="weather-data">
-                                <div class="data-icon"><i class="fas fa-tint"></i></div>
-                                <p>${entry.weatherData.main.humidity}%</p>
-                            </div>
-                            <div class="weather-data">
-                                <div class="data-icon"><i class="fas fa-cloud"></i></div>
-                                <p>${entry.weatherData.clouds.all}%</p>
-                            </div>
-                        ` : '<p>Weather information not available.</p>'}
+                        <h3>${entry.city}, ${entry.weatherData.sys.country}</h3>
+                        <h3>${getCurrentDate()}</h3>
+                        ${displayWeatherData(entry.weatherData)}
                     </li>
                 `).join('')}
             </ul>
         `;
     }
+    
+    function displayWeatherData(weatherData) {
+        return weatherData.main ? `
+            <div class="data-icon"><img src="https://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png" alt="weather-icon"></div>
+            <div class="weather-data">
+                <p>Temperature: ${weatherData.main.temp.toFixed(2)}°C</p>
+            </div>
+            <div class="weather-data">
+                <div class="data-icon"><i class="fas fa-tint"></i></div>
+                <p>Humidity: ${weatherData.main.humidity}%</p>
+            </div>
+            <div class="weather-data">
+                <div class="data-icon"><i class="fas fa-cloud"></i></div>
+                <p>Cloudiness: ${weatherData.clouds.all}%</p>
+            </div>
+        ` : '<p>Weather information not available.</p>';
+    }
+    
 
     function displayMainCard(weatherData) {
         mainCard.innerHTML = `
-            <h2> ${weatherData.name}, ${weatherData.sys.country}</h2>
-            <p>${new Date(weatherData.dt * 1000).toLocaleTimeString()}</p>
+            <h2>${weatherData.name}, ${weatherData.sys.country}</h2>
+            <h3>${getCurrentDate()}</h3>
             ${weatherData.main ? `
+            <div class="data-icon"><img src="https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@4x.png" alt="weather-icon"></div>
                 <div class="weather-data">
-                    <div class="data-icon"><i class="fas fa-thermometer-half"></i></div>
                     <p>Temperature: ${weatherData.main.temp.toFixed(2)}°C</p>
-                </div>
-                <div class="weather-data">
-                    <div class="data-icon"><i class="fas fa-sun"></i></div>
-                    <p>${weatherData.weather[0].description}</p>
                 </div>
                 <div class="weather-data">
                     <div class="data-icon"><i class="fas fa-tint"></i></div>
@@ -109,49 +107,49 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
     
+    
     function displayForecastCard(forecastData) {
         // Group forecast data by day
-        const dailyForecasts = forecastData.list.reduce((result, item) => {
-            const date = new Date(item.dt * 1000).toLocaleDateString();
-            if (!result[date]) {
-                result[date] = [];
+        const forecastByDay = {};
+        forecastData.list.forEach(item => {
+            const date = new Date(item.dt * 1000);
+            const day = date.toDateString();
+            if (!forecastByDay[day]) {
+                forecastByDay[day] = [];
             }
-            result[date].push(item);
-            return result;
-        }, {});
+            forecastByDay[day].push(item);
+        });
     
         forecastCard.innerHTML = `
             <h2>6-Day Forecast:</h2>
             <ul>
-                ${Object.entries(dailyForecasts).map(([date, items]) => {
-                    // Get the first item of the day
-                    const firstItem = items[0];
+                ${Object.keys(forecastByDay).slice(0, maxForecastDays).map(day => {
+                    const dayData = forecastByDay[day];
+                    const averageTemp = dayData.reduce((total, item) => total + item.main.temp, 0) / dayData.length;
+                    const weatherData = dayData[0];
                     return `
                         <li>
-                            <h3>${new Date(firstItem.dt * 1000).toDateString()}</h3>
-                            <p>Time: ${new Date(firstItem.dt * 1000).toLocaleTimeString()}</p>
-                            <div class="weather-data">
-                                <div class="data-icon"><i class="fas fa-thermometer-half"></i></div>
-                                <p>Temperature: ${firstItem.main.temp.toFixed(2)}°C</p>
-                            </div>
-                            <div class="weather-data">
-                                <div class="data-icon"><i class="fas fa-sun"></i></div>
-                                <p>${firstItem.weather[0].description}</p>
-                            </div>
-                            <div class="weather-data">
-                                <div class="data-icon"><i class="fas fa-tint"></i></div>
-                                <p>Humidity: ${firstItem.main.humidity}%</p>
-                            </div>
-                            <div class="weather-data">
-                                <div class="data-icon"><i class="fas fa-cloud"></i></div>
-                                <p>Cloudiness: ${firstItem.clouds.all}%</p>
-                            </div>
+                            <h3>${new Date(weatherData.dt * 1000).toDateString()}</h3>
+                            <img src="https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png" alt="weather-icon">
+                            <p>Temperature: ${averageTemp.toFixed(2)}°C</p>
+                            <p>${weatherData.weather[0].description}</p>
+                            <p>Humidity: ${weatherData.main.humidity}%</p>
+                            <p>Cloudiness: ${weatherData.clouds.all}%</p>
                         </li>
                     `;
                 }).join('')}
             </ul>
         `;
     }
+    
+    
+    
+    function getCurrentDate() {
+    const currentDate = new Date();
+    return currentDate.toDateString();
+}
+
+    
     
         
 

@@ -25,7 +25,6 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    height: 100vh;
 }
 
 /* Search Styles */
@@ -36,7 +35,6 @@ body {
     flex-wrap: wrap;
     gap: 15px;
 }
-
 
 .search {
     display: flex;
@@ -49,6 +47,7 @@ body {
 }
 
 input[type="text"] {
+    flex: 1;
     width: 90%;
     padding: 10px;
     border: 1px solid #ccc;
@@ -62,11 +61,11 @@ button {
     background-color: #a6cdda;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 8px 10px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    margin-top: 10px;
+    margin-top: 27px;
 }
 
 /* Last Search Styles */
@@ -90,6 +89,7 @@ button {
 }
 
 .last-search li {
+    background: linear-gradient(to bottom, #7297a0, #f5f5f5);
     font-size: 16px;
     margin: 5px;
     padding: 5px;
@@ -99,7 +99,6 @@ button {
     display: inline-block;
     margin-right: 10px;
 }
-
 
 /* Weather Data Styles */
 .weather-data {
@@ -115,15 +114,15 @@ button {
 .main-card {
     background: linear-gradient(to bottom, #7297a0, #f5f5f5);
     border-radius: 10px;
-    padding: 20px;
-    margin: 15px;
+    padding: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
+    min-width: 12%;
+    margin-right: 12px;
 }
-
 
 .main-card h2 {
     font-size: 24px;
@@ -135,15 +134,14 @@ button {
 .forecast-card {
     background: linear-gradient(to bottom, #7297a0, #f5f5f5);
     border-radius: 10px;
-    padding: 20px;
-    margin: 15px;
+    padding: 10px;
+    margin: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
 }
-
 
 .forecast-card h2 {
     font-size: 20px;
@@ -161,6 +159,7 @@ button {
 }
 
 .forecast-card li {
+    background: linear-gradient(to bottom, #7297a0, #f5f5f5);
     font-size: 16px;
     margin: 5px;
     padding: 5px;
@@ -168,7 +167,18 @@ button {
     border-radius: 5px;
     background-color: #fff;
     text-align: center;
-    min-width: 150px;
+    min-width: 170px;
     margin-right: 10px;
 }
 
+.left-container {
+    flex: 1; /* Takes up the available space in the container */
+    flex-basis: 25%;
+    display: flex;
+    flex-direction: column;
+}
+
+.right-container {
+    flex-basis: 55%; /* Set the width of the right container as needed */
+    padding: 10px; /* Add some padding for spacing */
+}
