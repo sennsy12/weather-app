@@ -53,21 +53,51 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
     }
 
-    function displaySearchHistory(searchHistory) {
-        lastSearchElement.innerHTML = `
-            <h2>Last Searched:</h2>
-            <ul>
-                ${searchHistory.map(entry => `
-                    <li>
-                        <h3>${entry.city}, ${entry.weatherData.sys.country}</h3>
-                        <h3>${getCurrentDate()}</h3>
-                        ${displayWeatherData(entry.weatherData)}
-                    </li>
-                `).join('')}
-            </ul>
+
+function displaySearchHistory(searchHistory) {
+    const searchHistoryList = document.getElementById('search-history-list');
+    searchHistoryList.innerHTML = '';
+    searchHistory.forEach((entry, index) => {
+        const listItem = document.createElement('li');
+        listItem.classList.add('search-history-item');
+        listItem.setAttribute('data-index', index);
+        listItem.innerHTML = `
+            <h3>${entry.city}</h3>
+            ${entry.weatherData.main ? `
+                <div class="weather-data">
+                    <div class="data-icon"><i class="fas fa-thermometer-half"></i></div>
+                    <p>Temperature: ${entry.weatherData.main.temp.toFixed(2)}°C</p>
+                </div>
+                <div class="weather-data">
+                    <div class="data-icon"><i class="fas fa-sun"></i></div>
+                    <p>${entry.weatherData.weather[0].description}</p>
+                </div>
+                <div class="weather-data">
+                    <div class="data-icon"><i class="fas fa-tint"></i></div>
+                    <p>Humidity: ${entry.weatherData.main.humidity}%</p>
+                </div>
+                <div class="weather-data">
+                    <div class="data-icon"><i class="fas fa-cloud"></i></div>
+                    <p>Cloudiness: ${entry.weatherData.clouds.all}%</p>
+                </div>
+            ` : '<p>Weather information not available.</p>'}
         `;
-    }
-    
+        searchHistoryList.appendChild(listItem);
+    });
+
+    // Add click event listeners to search history items
+    const searchHistoryItems = document.querySelectorAll('.search-history-item');
+    searchHistoryItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const index = item.getAttribute('data-index');
+            if (searchHistory[index]) {
+                const cityName = searchHistory[index].city;
+                fetchWeatherData(cityName);
+            }
+        });
+    });
+}
+
     function displayWeatherData(weatherData) {
         return weatherData.main ? `
             <div class="data-icon"><img src="https://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png" alt="weather-icon"></div>
@@ -85,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         ` : '<p>Weather information not available.</p>';
     }
-    
 
     function displayMainCard(weatherData) {
         mainCard.innerHTML = `
@@ -108,12 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ` : '<p>Weather information not available.</p>'}
         `;
     }
-    
-    function getCurrentDateTime() {
-        const now = new Date();
-        return now.toLocaleString(); // Change the format as needed
-    }
-    
     
     function displayForecastCard(forecastData) {
         // Group forecast data by day
@@ -157,16 +180,15 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
     
-    
-    
     function getCurrentDate() {
     const currentDate = new Date();
     return currentDate.toDateString();
 }
 
-    
-    
-        
+function getCurrentDateTime() {
+    const now = new Date();
+    return now.toLocaleString(); // Change the format as needed
+}
 
     function getSearchHistory() {
         const storedHistory = localStorage.getItem('searchHistory');

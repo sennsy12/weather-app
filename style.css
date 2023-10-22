@@ -182,3 +182,12 @@ button {
     flex-basis: 55%; /* Set the width of the right container as needed */
     padding: 10px; /* Add some padding for spacing */
 }
+
+.search-history-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-history-item:hover {
+    background-color: #ececec;
+}
