@@ -72,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return weatherData.main ? `
             <div class="data-icon"><img src="https://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png" alt="weather-icon"></div>
             <div class="weather-data">
+            <div class="data-icon"><i class="fas fa-thermometer-half"></i></div>
                 <p>Temperature: ${weatherData.main.temp.toFixed(2)}°C</p>
             </div>
             <div class="weather-data">
@@ -89,22 +90,28 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayMainCard(weatherData) {
         mainCard.innerHTML = `
             <h2>${weatherData.name}, ${weatherData.sys.country}</h2>
-            <h3>${getCurrentDate()}</h3>
+            <h3>${getCurrentDateTime()}</h3>
             ${weatherData.main ? `
             <div class="data-icon"><img src="https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@4x.png" alt="weather-icon"></div>
-                <div class="weather-data">
-                    <p>Temperature: ${weatherData.main.temp.toFixed(2)}°C</p>
-                </div>
-                <div class="weather-data">
-                    <div class="data-icon"><i class="fas fa-tint"></i></div>
-                    <p>Humidity: ${weatherData.main.humidity}%</p>
-                </div>
-                <div class="weather-data">
-                    <div class="data-icon"><i class="fas fa-cloud"></i></div>
-                    <p>Cloudiness: ${weatherData.clouds.all}%</p>
-                </div>
-            ` : '<p>Weather information not available.</p>'}
+            <div class="weather-data">
+                <div class="data-icon"><i class="fas fa-thermometer-half"></i></div>
+                <p>Temperature: ${weatherData.main.temp.toFixed(2)}°C</p>
+            </div>
+            <div class="weather-data">
+                <div class="data-icon"><i class="fas fa-tint"></i></div>
+                <p>Humidity: ${weatherData.main.humidity}%</p>
+            </div>
+            <div class="weather-data">
+                <div class="data-icon"><i class="fas fa-cloud"></i></div>
+                <p>Cloudiness: ${weatherData.clouds.all}%</p>
+            </div>
+        ` : '<p>Weather information not available.</p>'}
         `;
+    }
+    
+    function getCurrentDateTime() {
+        const now = new Date();
+        return now.toLocaleString(); // Change the format as needed
     }
     
     
@@ -131,10 +138,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         <li>
                             <h3>${new Date(weatherData.dt * 1000).toDateString()}</h3>
                             <img src="https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png" alt="weather-icon">
-                            <p>Temperature: ${averageTemp.toFixed(2)}°C</p>
-                            <p>${weatherData.weather[0].description}</p>
+                            <div class="weather-data">
+                            <div class="data-icon"><i class="fas fa-thermometer-half"></i></div>
+                            <p>Temperature: ${weatherData.main.temp.toFixed(2)}°C</p>
+                        </div>
+                            <div class="weather-data">
+                            <div class="data-icon"><i class="fas fa-tint"></i></div>
                             <p>Humidity: ${weatherData.main.humidity}%</p>
+                        </div>
+                        <div class="weather-data">
+                            <div class="data-icon"><i class="fas fa-cloud"></i></div>
                             <p>Cloudiness: ${weatherData.clouds.all}%</p>
+                        </div>
                         </li>
                     `;
                 }).join('')}
@@ -158,3 +173,4 @@ document.addEventListener('DOMContentLoaded', () => {
         return storedHistory ? JSON.parse(storedHistory) : [];
     }
 });
+
