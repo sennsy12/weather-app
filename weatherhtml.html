@@ -2,39 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Weather App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Include Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <h1>Weather App</h1>
+        <h1><i class="fas fa-cloud-sun"></i> Weather Forecast</h1>
     </header>
-    <div class="container">
-        <div class="left-container">
-            <div class="search">
-                <input type="text" id="city" placeholder="Enter a city">
-                <button id="search">Get Weather</button>
+
+    <main class="container">
+        <section class="search-section">
+            <div class="search-box">
+                <input type="text" id="city" placeholder="Enter a city name">
+                <button id="search"><i class="fas fa-search"></i> Get Weather</button>
             </div>
-            <div class="main-card">
-                <!-- Current weather details will be displayed here -->
+        </section>
+
+        <section class="weather-display">
+            <div class="current-weather">
+                <h2>Current Weather</h2>
+                <div class="main-card">
+                    <!-- Current weather details will be displayed here -->
+                </div>
             </div>
-        </div>
-        <div class="right-container">
-            <div class="forecast-card">
-                <!-- 6-day forecast details will be displayed here -->
+            <div class="forecast">
+                <h2>5-Day Forecast</h2>
+                <div class="forecast-container">
+                    <!-- 5-day forecast details will be displayed here -->
+                </div>
             </div>
-        </div>
-    </div>
-    <div class="last-search-container">
-            <h2>Last Searched</h2>
+        </section>
+
+        <section class="search-history">
+            <h2>Recent Searches</h2>
             <ul id="search-history-list">
                 <!-- Dynamically generated search history will go here -->
             </ul>
-        </div>
+        </section>
+    </main>
 
-    </div>
+    <footer>
+        <p>&copy; 2024 Weather Forecast App. All rights reserved.</p>
+    </footer>
+
     <script src="script.js"></script>
-
 </body>
 </html>

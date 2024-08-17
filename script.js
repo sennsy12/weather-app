@@ -5,11 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const cityInput = document.getElementById('city');
     const searchButton = document.getElementById('search');
-    const lastSearchElement = document.getElementById('last-search');
-    const mainCard = document.querySelector('.main-card'); // Target the main card container
-    const forecastCard = document.querySelector('.forecast-card'); // Target the forecast card container
+    const mainCard = document.querySelector('.main-card');
+    const forecastContainer = document.querySelector('.forecast-container');
+    const searchHistoryList = document.getElementById('search-history-list');
 
     let searchHistory = getSearchHistory();
+
     // Initial API call and data population
     fetchWeatherData('Oslo'); // default city 
 
@@ -29,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (weatherData.cod === 200 && forecastData.cod === '200') {
                 updateSearchHistory(cityName, weatherData);
-                displaySearchHistory(searchHistory);
+                displaySearchHistory();
                 displayMainCard(weatherData);
                 displayForecastCard(forecastData);
             } else {
@@ -46,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateSearchHistory(cityName, weatherData) {
+        searchHistory = searchHistory.filter(item => item.city !== cityName);
         searchHistory.unshift({ city: cityName, weatherData });
         if (searchHistory.length > maxSearchHistory) {
             searchHistory.pop();
@@ -53,125 +55,94 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
     }
 
-
-function displaySearchHistory(searchHistory) {
-    const searchHistoryList = document.getElementById('search-history-list');
-    searchHistoryList.innerHTML = '';
-    searchHistory.forEach((entry, index) => {
-        const listItem = document.createElement('li');
-        listItem.classList.add('search-history-item');
-        listItem.setAttribute('data-index', index);
-        listItem.innerHTML = `
-            <h3>${entry.city}</h3>
-            ${entry.weatherData.main ? `
-                <div class="weather-data">
-                    <div class="data-icon"><i class="fas fa-thermometer-half"></i></div>
-                    <p>Temperature: ${entry.weatherData.main.temp.toFixed(2)}°C</p>
-                </div>
-                <div class="weather-data">
-                    <div class="data-icon"><i class="fas fa-sun"></i></div>
-                    <p>${entry.weatherData.weather[0].description}</p>
-                </div>
-                <div class="weather-data">
-                    <div class="data-icon"><i class="fas fa-tint"></i></div>
-                    <p>Humidity: ${entry.weatherData.main.humidity}%</p>
-                </div>
-                <div class="weather-data">
-                    <div class="data-icon"><i class="fas fa-cloud"></i></div>
-                    <p>Cloudiness: ${entry.weatherData.clouds.all}%</p>
-                </div>
-            ` : '<p>Weather information not available.</p>'}
-        `;
-        searchHistoryList.appendChild(listItem);
-    });
-
-    // Add click event listeners to search history items
-    const searchHistoryItems = document.querySelectorAll('.search-history-item');
-    searchHistoryItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const index = item.getAttribute('data-index');
-            if (searchHistory[index]) {
-                const cityName = searchHistory[index].city;
-                fetchWeatherData(cityName);
-            }
+    function displaySearchHistory() {
+        searchHistoryList.innerHTML = '';
+        searchHistory.forEach((entry, index) => {
+            const listItem = document.createElement('li');
+            listItem.classList.add('search-history-item');
+            listItem.textContent = entry.city;
+            listItem.addEventListener('click', () => fetchWeatherData(entry.city));
+            searchHistoryList.appendChild(listItem);
         });
-    });
-}
-
+    }
 
     function displayMainCard(weatherData) {
         mainCard.innerHTML = `
             <h2>${weatherData.name}, ${weatherData.sys.country}</h2>
-            <h3>${getCurrentDateTime()}</h3>
-            ${weatherData.main ? `
-            <div class="data-icon"><img src="https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@4x.png" alt="weather-icon"></div>
-            <div class="weather-data">
-                <div class="data-icon"><i class="fas fa-thermometer-half"></i></div>
-                <p>Temperature: ${weatherData.main.temp.toFixed(2)}°C</p>
-            </div>
-            <div class="weather-data">
-                <div class="data-icon"><i class="fas fa-tint"></i></div>
-                <p>Humidity: ${weatherData.main.humidity}%</p>
-            </div>
-            <div class="weather-data">
-                <div class="data-icon"><i class="fas fa-cloud"></i></div>
-                <p>Cloudiness: ${weatherData.clouds.all}%</p>
-            </div>
-        ` : '<p>Weather information not available.</p>'}
+            <p>${getCurrentDateTime()}</p>
+            <img src="https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png" alt="${weatherData.weather[0].description}">
+            <p class="temperature">${Math.round(weatherData.main.temp)}°C</p>
+            <p>${weatherData.weather[0].description}</p>
+            <p>Humidity: ${weatherData.main.humidity}%</p>
+            <p>Wind: ${weatherData.wind.speed} m/s</p>
         `;
     }
-    
-    function displayForecastCard(forecastData) {
-        // Group forecast data by day
-        const forecastByDay = {};
-        forecastData.list.forEach(item => {
-            const date = new Date(item.dt * 1000);
-            const day = date.toDateString();
-            if (!forecastByDay[day]) {
-                forecastByDay[day] = [];
-            }
-            forecastByDay[day].push(item);
-        });
-    
-        forecastCard.innerHTML = `
-            <h2>6-Day Forecast:</h2>
-            <ul>
-                ${Object.keys(forecastByDay).slice(0, maxForecastDays).map(day => {
-                    const dayData = forecastByDay[day];
-                    const averageTemp = dayData.reduce((total, item) => total + item.main.temp, 0) / dayData.length;
-                    const weatherData = dayData[0];
-                    return `
-                        <li>
-                            <h3>${new Date(weatherData.dt * 1000).toDateString()}</h3>
-                            <img src="https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png" alt="weather-icon">
-                            <div class="weather-data">
-                            <div class="data-icon"><i class="fas fa-thermometer-half"></i></div>
-                            <p>Temperature: ${weatherData.main.temp.toFixed(2)}°C</p>
-                        </div>
-                            <div class="weather-data">
-                            <div class="data-icon"><i class="fas fa-tint"></i></div>
-                            <p>Humidity: ${weatherData.main.humidity}%</p>
-                        </div>
-                        <div class="weather-data">
-                            <div class="data-icon"><i class="fas fa-cloud"></i></div>
-                            <p>Cloudiness: ${weatherData.clouds.all}%</p>
-                        </div>
-                        </li>
-                    `;
-                }).join('')}
-            </ul>
-        `;
-    }
-    
 
-function getCurrentDateTime() {
-    const now = new Date();
-    return now.toLocaleString(); // Change the format as needed
-}
+    function displayForecastCard(forecastData) {
+        forecastContainer.innerHTML = '';
+        const dailyForecasts = getDailyForecasts(forecastData.list);
+        
+        dailyForecasts.slice(0, maxForecastDays).forEach(day => {
+            const card = document.createElement('div');
+            card.className = 'forecast-card';
+            card.innerHTML = `
+                <h3>${formatDate(day.dt)}</h3>
+                <div class="weather-icon"><i class="fas fa-${getWeatherIcon(day.weather[0].main)}"></i></div>
+                <div class="temperature">${Math.round(day.main.temp)}°C</div>
+                <div class="description">${day.weather[0].description}</div>
+            `;
+            forecastContainer.appendChild(card);
+        });
+    }
+
+    function getDailyForecasts(forecastList) {
+        const dailyForecasts = [];
+        const today = new Date().setHours(0, 0, 0, 0);
+        
+        forecastList.forEach(forecast => {
+            const forecastDate = new Date(forecast.dt * 1000).setHours(0, 0, 0, 0);
+            if (forecastDate > today && dailyForecasts.length < maxForecastDays) {
+                if (!dailyForecasts.some(f => new Date(f.dt * 1000).setHours(0, 0, 0, 0) === forecastDate)) {
+                    dailyForecasts.push(forecast);
+                }
+            }
+        });
+
+        return dailyForecasts;
+    }
+
+    function getCurrentDateTime() {
+        return new Date().toLocaleString();
+    }
+
+    function formatDate(timestamp) {
+        const date = new Date(timestamp * 1000);
+        return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    }
+
+    function getWeatherIcon(weatherMain) {
+        const iconMap = {
+            'Clear': 'sun',
+            'Clouds': 'cloud',
+            'Rain': 'cloud-rain',
+            'Snow': 'snowflake',
+            'Thunderstorm': 'bolt',
+            'Drizzle': 'cloud-rain',
+            'Mist': 'smog',
+            'Smoke': 'smog',
+            'Haze': 'smog',
+            'Dust': 'smog',
+            'Fog': 'smog',
+            'Sand': 'wind',
+            'Ash': 'smog',
+            'Squall': 'wind',
+            'Tornado': 'tornado'
+        };
+        return iconMap[weatherMain] || 'cloud';
+    }
 
     function getSearchHistory() {
         const storedHistory = localStorage.getItem('searchHistory');
         return storedHistory ? JSON.parse(storedHistory) : [];
     }
 });
-
