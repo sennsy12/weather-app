@@ -10,7 +10,12 @@
 </head>
 <body>
     <header>
-        <h1><i class="fas fa-cloud-sun"></i> Weather Forecast</h1>
+        <div class="header-content">
+            <h1><i class="fas fa-cloud-sun"></i> Weather Forecast</h1>
+            <button id="theme-toggle" class="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
     </header>
 
     <main class="container">
@@ -25,13 +30,27 @@
             <div class="current-weather">
                 <h2>Current Weather</h2>
                 <div class="main-card">
-                    <!-- Current weather details will be displayed here -->
+                    <h2>${weatherData.name}, ${weatherData.sys.country}</h2>
+                    <p>${getCurrentDateTime()}</p>
+                    <img src="https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png" alt="${weatherData.weather[0].description}">
+                    <p class="temperature">${Math.round(weatherData.main.temp)}°C</p>
+                    <p>${weatherData.weather[0].description}</p>
+                    <div class="weather-details">
+                        <div class="weather-detail-item">
+                            <i class="fas fa-tint"></i>
+                            <span>Humidity: ${weatherData.main.humidity}%</span>
+                        </div>
+                        <div class="weather-detail-item">
+                            <i class="fas fa-wind"></i>
+                            <span>Wind: ${weatherData.wind.speed} m/s</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="forecast">
                 <h2>5-Day Forecast</h2>
                 <div class="forecast-container">
-                    <!-- 5-day forecast details will be displayed here -->
+                    <!-- 5-day forecast  -->
                 </div>
             </div>
         </section>
@@ -39,7 +58,7 @@
         <section class="search-history">
             <h2>Recent Searches</h2>
             <ul id="search-history-list">
-                <!-- Dynamically generated search history will go here -->
+                <!--  search history  -->
             </ul>
         </section>
     </main>

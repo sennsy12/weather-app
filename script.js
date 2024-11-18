@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const apiKey = '47a7f06dc56f615fc549ab04243a78fc'; // Replace with your OpenWeatherMap API key
+    const apiKey = '47a7f06dc56f615fc549ab04243a78fc'; 
     const maxSearchHistory = 3; // Maximum number of cities to display in the last search history
     const maxForecastDays = 6; // Maximum number of days to display in the forecast
 
@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let searchHistory = getSearchHistory();
 
-    // Initial API call and data population
     fetchWeatherData('Oslo'); // default city 
 
     searchButton.addEventListener('click', () => {
@@ -82,7 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
         forecastContainer.innerHTML = '';
         const dailyForecasts = getDailyForecasts(forecastData.list);
         
-        dailyForecasts.slice(0, maxForecastDays).forEach(day => {
+        console.log('Number of forecasts to display:', dailyForecasts.length); // Debug log
+        
+        dailyForecasts.forEach(day => {
             const card = document.createElement('div');
             card.className = 'forecast-card';
             card.innerHTML = `
@@ -96,15 +97,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getDailyForecasts(forecastList) {
+
         const dailyForecasts = [];
-        const today = new Date().setHours(0, 0, 0, 0);
+        const seenDates = new Set();
         
         forecastList.forEach(forecast => {
-            const forecastDate = new Date(forecast.dt * 1000).setHours(0, 0, 0, 0);
-            if (forecastDate > today && dailyForecasts.length < maxForecastDays) {
-                if (!dailyForecasts.some(f => new Date(f.dt * 1000).setHours(0, 0, 0, 0) === forecastDate)) {
-                    dailyForecasts.push(forecast);
-                }
+            const forecastDate = new Date(forecast.dt * 1000);
+            const dateStr = forecastDate.toDateString();
+            
+            if (!seenDates.has(dateStr) && dailyForecasts.length < maxForecastDays) {
+                dailyForecasts.push(forecast);
+                seenDates.add(dateStr);
             }
         });
 
@@ -145,4 +148,29 @@ document.addEventListener('DOMContentLoaded', () => {
         const storedHistory = localStorage.getItem('searchHistory');
         return storedHistory ? JSON.parse(storedHistory) : [];
     }
+
+
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = themeToggle.querySelector('i');
+    
+
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    if (currentTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        themeIcon.classList.replace('fa-moon', 'fa-sun');
+    }
+
+
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-theme');
+        
+        // Update icon
+        if (document.body.classList.contains('dark-theme')) {
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            themeIcon.classList.replace('fa-sun', 'fa-moon');
+            localStorage.setItem('theme', 'light');
+        }
+    });
 });
