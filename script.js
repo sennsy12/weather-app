@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchWeatherData(cityName) {
         try {
-            const [weatherData, forecastData] = await Promise.all([
+            const [weatherData, forecastData] = await Promise.all([ 
                 fetchWeather(cityName, 'weather'),
                 fetchWeather(cityName, 'forecast')
             ]);
@@ -80,9 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayForecastCard(forecastData) {
         forecastContainer.innerHTML = '';
         const dailyForecasts = getDailyForecasts(forecastData.list);
-        
-        console.log('Number of forecasts to display:', dailyForecasts.length); // Debug log
-        
+
         dailyForecasts.forEach(day => {
             const card = document.createElement('div');
             card.className = 'forecast-card';
@@ -97,14 +95,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getDailyForecasts(forecastList) {
-
         const dailyForecasts = [];
         const seenDates = new Set();
-        
+
         forecastList.forEach(forecast => {
             const forecastDate = new Date(forecast.dt * 1000);
             const dateStr = forecastDate.toDateString();
-            
+
             if (!seenDates.has(dateStr) && dailyForecasts.length < maxForecastDays) {
                 dailyForecasts.push(forecast);
                 seenDates.add(dateStr);
@@ -149,17 +146,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return storedHistory ? JSON.parse(storedHistory) : [];
     }
 
-
+    // Set default theme to dark
     const themeToggle = document.getElementById('theme-toggle');
     const themeIcon = themeToggle.querySelector('i');
-    
 
-    const currentTheme = localStorage.getItem('theme') || 'light';
+    const currentTheme = localStorage.getItem('theme') || 'dark';
     if (currentTheme === 'dark') {
         document.body.classList.add('dark-theme');
         themeIcon.classList.replace('fa-moon', 'fa-sun');
     }
-
 
     themeToggle.addEventListener('click', () => {
         document.body.classList.toggle('dark-theme');
